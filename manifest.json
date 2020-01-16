@@ -2,7 +2,7 @@
     "name" : "ecc",
     "appid" : "__UNI__29611EA",
     "description" : "",
-    "versionName" : "1.0.0",
+    "versionName" : "1.2.6",
     "versionCode" : "100",
     "transformPx" : false,
     /* 5+App特有相关 */
@@ -74,7 +74,7 @@
     "h5" : {
         "title" : "ecc",
         "router" : {
-            "mode" : "hash"
+            "mode" : "history"
         },
         "optimization" : {
             "treeShaking" : {
