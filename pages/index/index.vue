@@ -1,8 +1,8 @@
 <template>
 		<view :class="{content:1,phone:phone}">
 			<image :src="phone?'/static/phoneIndex.png':'/static/newWeb0.png'" mode="widthFix"></image>
-			<input class="name"/>
-			<input class="password" password="true"/>
+			<input class="name" v-model="user"/>
+			<input class="password" password="true" v-model="pwd"/>
 			<view class="button" @click="c"></view>
 		</view>
 	
@@ -10,11 +10,13 @@
 
 <script>
 	import all from "@/mixin/all"
+	import {postFetch,logout,logon} from "@/util/request_UT.js"
 	export default {
 		mixins: [all],
 		data() {
 			return {
-				
+				user:'',
+				pwd:''
 			}
 		},
 		onLoad() {
@@ -22,8 +24,23 @@
 		},
 		methods: {
 			c(){
-				alert('The account could not be found')
+				var that = this;
+				postFetch("index/login/login",{user:this.user,pwd:this.pwd},function(rep){
+					if(rep.data.status !== 200){
+						alert('The account could not be found')
+					}else{
+						logon(rep.data,function(){
+							uni.navigateTo({
+								url:'/pages/flow/flow?name='+that.user
+							})
+						})
+					}
+				})
+			
 			}
+		},
+		onShow(){
+			logout();
 		}
 	}
 </script>
@@ -61,6 +78,7 @@
 			width: 74rpx;
 			height: 12rpx;
 			background-color: transparent;
+			cursor: pointer;
 		}
 		&.phone{
 			input{

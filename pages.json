@@ -21,6 +21,13 @@
             	"navigationBarTitleText": "ECC"
             }
         }
+        ,{
+            "path" : "pages/flow/flow",
+            "style": {
+            	"navigationStyle": "custom",
+            	"navigationBarTitleText": "ECC"
+            }
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

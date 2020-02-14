@@ -80,6 +80,21 @@
             "treeShaking" : {
                 "enable" : false
             }
-        }
+        },
+		"async": {
+		
+		"delay": 1000000,
+		
+		"timeout": 1200000
+		
+		},
+		"networkTimeout":{
+			"request":1200000,
+			"connectSocket":400000,
+			
+			"uploadFile":400000,
+			
+			"downloadFile":400000
+		}
     }
 }

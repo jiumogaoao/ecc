@@ -16,19 +16,53 @@ var browser = {
             } (),
             language: (navigator.browserLanguage || navigator.language).toLowerCase()
         }
+
 module.exports = {
+	components:{},
 	data() {
 				return {
-					phone:browser.versions.mobile
+					ww:0,
+					wh:0,
+					showSide:false
 				}
 				},
 	mounted(){
-
-	},
-	computed:{
-
+		let that = this;
+		uni.getSystemInfo({
+		    success: function (res) {
+				that.ww = res.windowWidth
+				that.wh = res.windowHeight
+		    }
+		});
+		uni.onWindowResize((res)=>{
+			that.ww = res.size.windowWidth
+			that.wh = res.size.windowHeight
+		})
 	},
 	methods: {
 
 	},
+	computed:{
+		phone(){
+			return browser.versions.mobile
+		},
+		w(){
+			if(this.ww > 1920){
+				return this.ww;
+			}else{
+				return 1920;
+			}
+		},
+		s(){
+			if(this.ww > 1920){
+				return 1;
+			}else{
+				return this.ww/1920
+			}
+		},
+		h(){
+			console.log()
+			return this.wh/this.s;
+		}
+	}
 }
