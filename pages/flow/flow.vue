@@ -374,7 +374,7 @@
 	import all from "@/mixin/all"
 	import {postFetch,logout} from "@/util/request_UT.js"
 	import uQRCode from '@/static/uqrcode.js'
-	import moment from 'moment'
+	import moment from 'moment-timezone'
 	import echart from '@/components/echart.vue'
 	export default {
 		components:{echart},
@@ -424,7 +424,7 @@
 		},
 		computed:{
 			fee(){
-				return this.money * Number(this.rservice.replace('%','')) * 0.01
+				return this.money?(this.money - this.rmoney):0
 			}
 		},
 		methods:{
@@ -443,7 +443,7 @@
 				})
 			},
 			showDay(d){
-				return moment(d,"X").format("YYYY.MM.DD")
+				return moment(d,"X").tz('America/New_York').format("YYYY.MM.DD")
 			},
 			onCopy(){
 				alert('copy successed')
@@ -506,8 +506,9 @@
 			},
 			getW(){
 				let that = this;
+				
 				postFetch("index/index/withdraw",{
-					maney:that.money
+					maney:that.money?that.money:0
 				},function(rsp){
 					if(rsp.statusCode !== 200){
 						alert(rsp.errMsg)
@@ -519,12 +520,17 @@
 						that.rservice = rsp.data.data.service
 					}
 				})
+				
 				postFetch("index/index/realArrive",{
-					money:that.money
+					money:that.money?that.money:0
 				},function(rsp){
 					if(rsp.statusCode !== 200){
 						alert(rsp.errMsg)
 					}else{
+						if(!that.money){
+							that.rmoney = 0
+							return;
+						}
 						that.rmoney = rsp.data.data
 					}
 				})
@@ -573,10 +579,10 @@
 					let day=[];
 					let val=[];
 					for(let i = rsp.data.data.length-200;i<rsp.data.data.length;i++){
-						day.push(moment(rsp.data.data[i].time,"X").format('MM-DD'))
+						day.push(moment(rsp.data.data[i].time,"X").tz('America/New_York').format('MM-DD'))
 						val.push([rsp.data.data[i].first,rsp.data.data[i].last,rsp.data.data[i].low,rsp.data.data[i].high])
 						if(i==rsp.data.data.length-1){
-							that.lastDay = moment(rsp.data.data[i].time,"X").format('MM-DD')
+							that.lastDay = moment(rsp.data.data[i].time,"X").tz('America/New_York').format('MM-DD')
 							that.lastOpen = rsp.data.data[i].first
 							that.lastHigh = rsp.data.data[i].high
 							that.lastLow = rsp.data.data[i].low
