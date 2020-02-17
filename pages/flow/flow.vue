@@ -182,10 +182,18 @@
 									<view class="point"><view class="det">•</view>Please make sure that your computer and browser are secure and your information is protected from being tampered or leaked. </view>
 									<view class="point"><view class="det">•</view>The deposit can only be drawn after all the principal and income are drawn.</view>
 								</view>
-								<image class="submit" src="/static/flow/22.png"  @click="submit"></image>
+								<image class="submit" src="/static/flow/22.png"  @click="showP"></image>
 							</view>
 						</view>
 					</scroll-view>
+				</view>
+				<view class="passwordPopBG" v-if="showPassword" @click="hideP">
+					<view class="frame" @click.stop="stop">
+						<image src="/static/flow/23.png" class="title"></image>
+						<input class="input" password="true" v-model="password"/>
+						<view class="error" :style="{opacity:error?1:0}">*{{error}}</view>
+						<image src="/static/flow/24.png" class="button" @click="submit"></image>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -346,7 +354,7 @@
 						<view class="subInput">{{fee}} USDT</view>
 						<view class="title">Receive Amount</view>
 						<view class="subInput">{{rmoney}} USDT</view>
-						<view class="submit" @click="submit">OK</view>
+						<view class="submit" @click="showP">OK</view>
 						<view class="list">
 							<view class="point"><view class="det">•</view>Minimum withdrawal amount: 2 USDT -ERC20. </view>
 							<view class="point"><view class="det">•</view>In order to ensure the safety of funds, we will conduct manual review on the withdrawal of currency. Please wait patiently for the staff to contact you by phone or email. </view>
@@ -364,6 +372,14 @@
 				<view class="button" :class="{hl:item==1}" @click="changeItem(1)">
 					<image class="icon" src="/static/flow/phone/13.png"></image>
 					<view class="title">Icome</view>
+				</view>
+			</view>
+			<view class="passwordPopBG" v-if="showPassword" @click="hideP">
+				<view class="frame" @click.stop="stop">
+					<image src="/static/flow/23.png" class="title"></image>
+					<input class="input" password="true" v-model="password"/>
+					<view class="error" :style="{opacity:error?1:0}">*{{error}}</view>
+					<image src="/static/flow/24.png" class="button" @click="submit"></image>
 				</view>
 			</view>
 		</view>
@@ -419,7 +435,10 @@
 				lastLow:0,
 				lastClose:0,
 				lastVol:0,
-				name:''
+				name:'',
+				showPassword:false,
+				password:'',
+				error:''
 			};
 		},
 		computed:{
@@ -428,19 +447,38 @@
 			}
 		},
 		methods:{
+			stop(){},
+			hideP(){
+				this.error="";
+				this.showPassword=false;
+			},
+			showP(){
+				this.error="";
+				this.showPassword=true;
+			},
 			submit(){
 				let that = this
-				postFetch("index/index/drawing",{
-					maney: that.money,
-					to: that.rAddress
+				postFetch("index/index/transaction",{
+					transaction:that.password
 				},function(rsp){
 					if(rsp.data.status !== 200){
-						alert(rsp.data.msg)
+						that.error=rsp.data.msg
 					}else{
-						alert('successed')
-						that.item = 0
+						postFetch("index/index/drawing",{
+							maney: that.money,
+							to: that.rAddress
+						},function(rsp){
+							if(rsp.data.status !== 200){
+								that.error=rsp.data.msg
+							}else{
+								alert('successed')
+								that.hideP()
+								that.item = 0
+							}
+						})
 					}
 				})
+				
 			},
 			showDay(d){
 				return moment(d,"X").tz('America/New_York').format("YYYY.MM.DD")
@@ -613,6 +651,57 @@
 			justify-content: space-between;
 			align-items: center;
 			transform-origin: left top;
+		}
+		.passwordPopBG{
+			background-color: rgba(0,0,0,0.7);
+			position: absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			z-index: 999;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			.frame{
+				width:1437px;
+				height: 308px;
+				border-radius: 10px;
+				background-color: #56448c;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				.title{
+					width: 435px;
+					height:29px;
+				}
+				.input{
+					width:966px;
+					height:62px;
+					border:2px solid rgba(255,255,255,1);
+					border-radius:10px;
+					margin-top: 26px;
+					text-indent: 30px;
+					font-size:24px;
+					font-family:Microsoft YaHei;
+					font-weight:bold;
+					color:rgba(255,255,255,1);
+					text-shadow:0px 1px 2px rgba(0, 0, 0, 0.6), 0px 1px 1px rgba(0, 0, 0, 0.25);
+				}
+				.error{
+					font-size:24px;
+					font-family:Microsoft YaHei;
+					font-weight:400;
+					color:rgba(255,22,22,1);
+					margin-top: 11px;
+				}
+				.button{
+					width:227px;
+					height: 59px;
+					margin-top: 48px;
+				}
+			}
 		}
 		.leftFrame{
 			width:269px;
@@ -1149,6 +1238,59 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		.passwordPopBG{
+			background-color: rgba(0,0,0,0.7);
+			position: absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			z-index: 999;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0px 31rpx 0rpx 31rpx;
+			.frame{
+				width:100%;
+				height: 308rpx;
+				border-radius: 10px;
+				background-color: #56448c;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 0px 31rpx 0rpx 31rpx;
+				.title{
+					width: 435rpx;
+					height:29rpx;
+				}
+				.input{
+					width:100%;
+					height:62rpx;
+					border:2rpx solid rgba(255,255,255,1);
+					border-radius:10rpx;
+					margin-top: 26rpx;
+					text-indent: 30rpx;
+					font-size:24rpx;
+					font-family:Microsoft YaHei;
+					font-weight:bold;
+					color:rgba(255,255,255,1);
+					text-shadow:0px 1px 2rpx rgba(0, 0, 0, 0.6), 0px 1px 1px rgba(0, 0, 0, 0.25);
+				}
+				.error{
+					font-size:24rpx;
+					font-family:Microsoft YaHei;
+					font-weight:400;
+					color:rgba(255,22,22,1);
+					margin-top: 11rpx;
+				}
+				.button{
+					width:227rpx;
+					height: 59rpx;
+					margin-top: 48rpx;
+				}
+			}
+		}
 		.topFrame{
 			width:750rpx;
 			height:96rpx;
