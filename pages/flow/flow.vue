@@ -190,7 +190,11 @@
 				<view class="passwordPopBG" v-if="showPassword" @click="hideP">
 					<view class="frame" @click.stop="stop">
 						<image src="/static/flow/23.png" class="title"></image>
-						<input class="input" password="true" v-model="password"/>
+						<view class="inputFrame">
+							<input class="input" :password="see" v-model="password"/>
+							<image :src="see?'/static/flow/26.png':'/static/flow/25.png'" class="see" @click="toggleSee"></image>
+						</view>
+						
 						<view class="error" :style="{opacity:error?1:0}">*{{error}}</view>
 						<image src="/static/flow/24.png" class="button" @click="submit"></image>
 					</view>
@@ -377,7 +381,10 @@
 			<view class="passwordPopBG" v-if="showPassword" @click="hideP">
 				<view class="frame" @click.stop="stop">
 					<image src="/static/flow/23.png" class="title"></image>
-					<input class="input" password="true" v-model="password"/>
+					<view class="inputFrame">
+						<input class="input" :password="see" v-model="password"/>
+						<image :src="see?'/static/flow/26.png':'/static/flow/25.png'" class="see" @click="toggleSee"></image>
+					</view>
 					<view class="error" :style="{opacity:error?1:0}">*{{error}}</view>
 					<image src="/static/flow/24.png" class="button" @click="submit"></image>
 				</view>
@@ -417,7 +424,7 @@
 				count: 0,
 				list: [],
 				address:'',
-				money:0,
+				money:'',
 				rmoney:0,
 				rAddress:'',
 				rdeposit: "",
@@ -438,21 +445,47 @@
 				name:'',
 				showPassword:false,
 				password:'',
-				error:''
+				error:'',
+				see:true
 			};
 		},
 		computed:{
 			fee(){
-				return this.money?(this.money - this.rmoney):0
+				return Math.round((this.money?(this.money - this.rmoney):0)*10000)/10000
 			}
 		},
 		methods:{
+			init(){
+				let that = this;
+				postFetch("index/index/profit",{},function(rsp){
+					if(rsp.statusCode !== 200){
+						alert(rsp.errMsg)
+					}else{
+						that.id = rsp.data.data.id
+						that.calculation_power = rsp.data.data.calculation_power
+						that.mining_machine = rsp.data.data.mining_machine
+						that.price = rsp.data.data.price
+						that.whole_network_computing_power = rsp.data.data.whole_network_computing_power
+						that.whole_network_difficulty = rsp.data.data.whole_network_difficulty
+						that.todayincome = rsp.data.data.todayincome
+						that.accumulatedincome = rsp.data.data.accumulatedincome
+					}
+				})
+				this.getList(1)
+			},
+			toggleSee(){
+				this.see=!this.see
+			},
 			stop(){},
 			hideP(){
 				this.error="";
 				this.showPassword=false;
 			},
 			showP(){
+				if(!this.money||!this.rAddress){
+					alert('Please fill In the correct information')
+					return;
+				}
 				this.error="";
 				this.showPassword=true;
 			},
@@ -492,6 +525,7 @@
 			changeItem(i){
 				let that = this;
 				this.item = i;
+				this.init()
 				if(i==2){
 					that.$nextTick(function(){
 						setTimeout(function(){
@@ -587,21 +621,7 @@
 		},
 		mounted(){
 			let that = this;
-			postFetch("index/index/profit",{},function(rsp){
-				if(rsp.statusCode !== 200){
-					alert(rsp.errMsg)
-				}else{
-					that.id = rsp.data.data.id
-					that.calculation_power = rsp.data.data.calculation_power
-					that.mining_machine = rsp.data.data.mining_machine
-					that.price = rsp.data.data.price
-					that.whole_network_computing_power = rsp.data.data.whole_network_computing_power
-					that.whole_network_difficulty = rsp.data.data.whole_network_difficulty
-					that.todayincome = rsp.data.data.todayincome
-					that.accumulatedincome = rsp.data.data.accumulatedincome
-				}
-			})
-			this.getList(1)
+			this.init()
 			postFetch("index/index/address",{},function(rsp){
 				if(rsp.statusCode !== 200){
 					alert(rsp.errMsg)
@@ -676,18 +696,31 @@
 					width: 435px;
 					height:29px;
 				}
-				.input{
+				.inputFrame{
+					position: relative;
 					width:966px;
 					height:62px;
-					border:2px solid rgba(255,255,255,1);
-					border-radius:10px;
 					margin-top: 26px;
-					text-indent: 30px;
-					font-size:24px;
-					font-family:Microsoft YaHei;
-					font-weight:bold;
-					color:rgba(255,255,255,1);
-					text-shadow:0px 1px 2px rgba(0, 0, 0, 0.6), 0px 1px 1px rgba(0, 0, 0, 0.25);
+					.input{
+						width:966px;
+						height:62px;
+						border:2px solid rgba(255,255,255,1);
+						border-radius:10px;
+						
+						text-indent: 30px;
+						font-size:24px;
+						font-family:Microsoft YaHei;
+						font-weight:bold;
+						color:rgba(255,255,255,1);
+						text-shadow:0px 1px 2px rgba(0, 0, 0, 0.6), 0px 1px 1px rgba(0, 0, 0, 0.25);
+					}
+					.see{
+						width:37px;
+						height: 23px;
+						position: absolute;
+						right: 25px;
+						top:23px;
+					}
 				}
 				.error{
 					font-size:24px;
@@ -1264,19 +1297,33 @@
 					width: 435rpx;
 					height:29rpx;
 				}
-				.input{
+				.inputFrame{
 					width:100%;
 					height:62rpx;
-					border:2rpx solid rgba(255,255,255,1);
-					border-radius:10rpx;
+					position: relative;
 					margin-top: 26rpx;
-					text-indent: 30rpx;
-					font-size:24rpx;
-					font-family:Microsoft YaHei;
-					font-weight:bold;
-					color:rgba(255,255,255,1);
-					text-shadow:0px 1px 2rpx rgba(0, 0, 0, 0.6), 0px 1px 1px rgba(0, 0, 0, 0.25);
+					.see{
+						width:37rpx;
+						height: 23rpx;
+						position: absolute;
+						right: 25rpx;
+						top:23rpx;
+					}
+					.input{
+						width:100%;
+						height:62rpx;
+						border:2rpx solid rgba(255,255,255,1);
+						border-radius:10rpx;
+						
+						text-indent: 30rpx;
+						font-size:24rpx;
+						font-family:Microsoft YaHei;
+						font-weight:bold;
+						color:rgba(255,255,255,1);
+						text-shadow:0px 1px 2rpx rgba(0, 0, 0, 0.6), 0px 1px 1px rgba(0, 0, 0, 0.25);
+					}
 				}
+				
 				.error{
 					font-size:24rpx;
 					font-family:Microsoft YaHei;
