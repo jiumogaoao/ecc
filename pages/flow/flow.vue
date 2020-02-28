@@ -70,7 +70,7 @@
 											<image class="in" src="/static/flow/6.png" v-else></image>
 										</view>
 										<view class="td" style="width:15%">{{v.coin_type}}</view>
-										<view class="td" style="width:15%">{{v.money}}</view>
+										<view class="td" style="width:15%">${{v.money}}</view>
 										<view class="td" style="width:30%">{{v.address}}</view>
 									</view>
 									<view class="tb" style="border: 0;">
@@ -558,7 +558,7 @@
 				let that = this;
 				postFetch("index/index/principal",{
 					page:num,
-					per_page:4
+					per_page:5
 				},function(rsp){
 					if(rsp.statusCode !== 200){
 						alert(rsp.errMsg)
