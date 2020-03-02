@@ -169,11 +169,11 @@
 								<view class="centerFrame">
 									<view class="point">
 										<view class="title">Fee</view>
-										<view class="subInput">{{fee}} USDT</view>
+										<view class="subInput">&asymp;{{fee}} USDT</view>
 									</view>
 									<view class="point">
 										<view class="title">Receive Amount</view>
-										<view class="subInput">{{rmoney}} USDT</view>
+										<view class="subInput">&asymp;{{rmoney}} USDT</view>
 									</view>
 								</view>
 								<view class="list">
@@ -355,9 +355,9 @@
 						<view class="dsc" style="color:#B8FCB5;">Deposit：{{rdeposit}} USDT</view>
 						<view class="dsc" style="color:#B4ACEA;">Principal：{{rlock}} USDT Lock up until ：{{routtime}}</view>
 						<view class="title">Fee</view>
-						<view class="subInput">{{fee}} USDT</view>
+						<view class="subInput">&asymp;{{fee}} USDT</view>
 						<view class="title">Receive Amount</view>
-						<view class="subInput">{{rmoney}} USDT</view>
+						<view class="subInput">&asymp;{{rmoney}} USDT</view>
 						<view class="submit" @click="showP">OK</view>
 						<view class="list">
 							<view class="point"><view class="det">•</view>Minimum withdrawal amount: 2 USDT -ERC20. </view>
@@ -590,6 +590,7 @@
 						that.routtime = rsp.data.data.outtime
 						that.rbalance = rsp.data.data.balance
 						that.rservice = rsp.data.data.service
+						that.rAddress = rsp.data.data.default_address
 					}
 				})
 				
