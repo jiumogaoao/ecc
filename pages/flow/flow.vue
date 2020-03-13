@@ -38,9 +38,10 @@
 											<image class="title" src="/static/flow/11.png" style="width:119px;height:34px"></image>
 											<view class="number">{{deposit}} USDT</view>
 										</view>
-										<view class="td" style="width:30%;border-right: 1px solid rgba(213,213,213,0.2);">
+										<view class="td" style="width:30%;border-right: 1px solid rgba(213,213,213,0.2);position: relative;">
 											<image class="title" src="/static/flow/12.png" style="width:126px;height:34px"></image>
 											<view class="number">{{principal}} USDT</view>
+											<view class="number" v-if="principal_msg" style="color:#8d7dff;margin-top: 10px;position: absolute;bottom:10px;">{{principal_msg}}</view>
 										</view>
 										<view class="td" style="width:40%;">
 											<image class="title" src="/static/flow/13.png" style="width:259px;height:34px"></image>
@@ -415,6 +416,7 @@
 				accumulatedincome: "",
 				deposit: 0,
 				principal: 0,
+				principal_msg:"",
 				accumulatedincome2: 0,
 				total: 0,
 				page: 1,
@@ -565,6 +567,7 @@
 					}else{
 						that.deposit = rsp.data.data.deposit
 						that.principal = rsp.data.data.principal
+						that.principal_msg = rsp.data.data.principal_msg
 						that.accumulatedincome2 = rsp.data.data.accumulatedincome
 						that.total = rsp.data.data.total
 						that.page = rsp.data.data.page
@@ -590,7 +593,9 @@
 						that.routtime = rsp.data.data.outtime
 						that.rbalance = rsp.data.data.balance
 						that.rservice = rsp.data.data.service
-						that.rAddress = rsp.data.data.default_address
+						if(!that.rAddress){
+							that.rAddress = rsp.data.data.default_address
+						}
 					}
 				})
 				
